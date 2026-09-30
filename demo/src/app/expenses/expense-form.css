@@ -1,0 +1,17 @@
+h2 { margin: 0 0 1rem; font-size: 1.05rem; }
+label { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.9rem; flex: 1; }
+label span { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+input, select {
+  font: inherit; padding: 0.55rem 0.7rem; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--surface); color: var(--text);
+}
+input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.row { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.error { color: var(--danger); font-size: 0.78rem; }
+.actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.hint { color: var(--muted); font-size: 0.78rem; }
+button {
+  font: inherit; font-weight: 600; padding: 0.6rem 1.1rem; border: 0; border-radius: 8px;
+  background: var(--accent); color: white; cursor: pointer;
+}
+button:disabled { opacity: 0.6; cursor: default; }

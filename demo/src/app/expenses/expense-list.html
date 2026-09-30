@@ -1,0 +1,45 @@
+<section class="card">
+  <header>
+    <h2>Expenses</h2>
+    <div class="filters" role="group" aria-label="Filter by category">
+      @for (f of filters; track f) {
+        <button
+          type="button"
+          [class.active]="store.filter() === f"
+          [attr.aria-pressed]="store.filter() === f"
+          (click)="store.filter.set(f)"
+        >
+          {{ labels[f] }}
+        </button>
+      }
+    </div>
+  </header>
+
+  <table>
+    <thead>
+      <tr><th>Date</th><th>Description</th><th>Category</th><th class="num">Amount</th><th></th></tr>
+    </thead>
+    <tbody>
+      @for (e of store.visible(); track e.id) {
+        <tr>
+          <td class="muted">{{ e.date | date: 'd MMM' }}</td>
+          <td>{{ e.description }}</td>
+          <td><span class="pill" [attr.data-cat]="e.category">{{ labels[e.category] }}</span></td>
+          <td class="num">{{ e.amount | currency: currency }}</td>
+          <td class="num">
+            <button type="button" class="remove" (click)="store.remove(e.id)" [attr.aria-label]="'Remove ' + e.description">×</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="5" class="muted empty">No expenses in this category.</td></tr>
+      }
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3">{{ store.visible().length }} shown</td>
+        <td class="num">{{ store.visibleTotal() | currency: currency }}</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+</section>

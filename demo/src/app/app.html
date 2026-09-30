@@ -1,0 +1,15 @@
+<header class="topbar">
+  <h1>Expenses</h1>
+  <span class="subtitle">Trip: NG Switzerland</span>
+</header>
+
+<main class="layout">
+  <app-expense-list class="list" />
+  <div class="side">
+    <app-expense-summary />
+    <app-expense-form />
+  </div>
+</main>
+
+<!-- WebMCP layer: remove with provideExpenseWebMcp() in app.config.ts -->
+<app-agent-activity />

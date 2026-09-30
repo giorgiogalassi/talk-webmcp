@@ -1,0 +1,20 @@
+{
+  "name": "the-second-interface-angular-webmcp",
+  "version": "1.0.0",
+  "description": "The Second Interface: Turning Your Angular App Into an AI Tool with WebMCP — Giorgio Galassi",
+  "scripts": {
+    "dev": "slidev",
+    "build": "slidev build",
+    "export": "slidev export",
+    "export-dark": "slidev export --dark"
+  },
+  "author": "Giorgio Galassi",
+  "license": "ISC",
+  "dependencies": {
+    "@slidev/cli": "^52.15.2",
+    "@slidev/theme-default": "^0.25.0"
+  },
+  "devDependencies": {
+    "playwright-chromium": "^1.63.0"
+  }
+}

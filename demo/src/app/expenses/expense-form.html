@@ -1,0 +1,46 @@
+<form [formRoot]="expenseForm" class="card">
+  <h2>Add expense</h2>
+
+  <label>
+    <span>Description</span>
+    <input type="text" [formField]="expenseForm.description" placeholder="Taxi to the venue" />
+    @if (expenseForm.description().touched() && expenseForm.description().invalid()) {
+      <small class="error">{{ expenseForm.description().errors()[0].message }}</small>
+    }
+  </label>
+
+  <div class="row">
+    <label>
+      <span>Amount ({{ currency }})</span>
+      <input type="number" step="0.01" [formField]="expenseForm.amount" />
+      @if (expenseForm.amount().touched() && expenseForm.amount().invalid()) {
+        <small class="error">{{ expenseForm.amount().errors()[0].message }}</small>
+      }
+    </label>
+
+    <label>
+      <span>Category</span>
+      <select [formField]="expenseForm.category">
+        @for (c of categories; track c) {
+          <option [value]="c">{{ labels[c] }}</option>
+        }
+      </select>
+      @if (expenseForm.category().touched() && expenseForm.category().invalid()) {
+        <small class="error">{{ expenseForm.category().errors()[0].message }}</small>
+      }
+    </label>
+
+    <label>
+      <span>Date</span>
+      <input type="date" [formField]="expenseForm.date" />
+      @if (expenseForm.date().touched() && expenseForm.date().invalid()) {
+        <small class="error">{{ expenseForm.date().errors()[0].message }}</small>
+      }
+    </label>
+  </div>
+
+  <div class="actions">
+    <small class="hint">Up to {{ maxAmount }} {{ currency }}. Above that, ask your manager.</small>
+    <button type="submit" [disabled]="expenseForm().submitting()">Add expense</button>
+  </div>
+</form>
