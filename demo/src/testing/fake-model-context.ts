@@ -1,7 +1,7 @@
 /**
  * Minimal stand-in for the browser's `document.modelContext` (WebMCP), used by the specs.
  *
- * Angular 22.2 looks up `globalThis.document.modelContext ?? globalThis.navigator.modelContext`
+ * Angular 22.2+ looks up `globalThis.document.modelContext ?? globalThis.navigator.modelContext`
  * and silently does nothing when neither exists, so without this fake the tools would never
  * register under jsdom.
  */
@@ -23,7 +23,7 @@ export function installFakeModelContext(): FakeModelContext {
   const tools = new Map<string, RegisteredTool>();
   const doc = document as Document & { modelContext?: unknown };
 
-  doc.modelContext = {
+  (doc as unknown as { modelContext: unknown }).modelContext = {
     registerTool: async (tool: RegisteredTool, options?: { signal?: AbortSignal }) => {
       tools.set(tool.name, tool);
       options?.signal?.addEventListener('abort', () => tools.delete(tool.name));
@@ -41,7 +41,7 @@ export function installFakeModelContext(): FakeModelContext {
       return typeof result === 'string' ? result : result.content.map((c) => c.text).join('\n');
     },
     uninstall() {
-      delete doc.modelContext;
+      delete (doc as unknown as { modelContext?: unknown }).modelContext;
     },
   };
 }

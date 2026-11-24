@@ -15,7 +15,7 @@ Lead with the direction of flow: the agent calls *into* the app, the app exposes
 This is the opposite of agent-generates-UI talks. Security/trust stays a brief aside.
 
 ## Demo app
-`demo/` is a standalone Angular 22.2.0 CLI app (own package.json, `cd demo && npm start`). Keep the Angular version exact; don't bump it without updating IMPLEMENTATION-PLAN.md.
+`demo/` is a standalone Angular 22.3.0 CLI app (own package.json, `cd demo && npm start`). Keep the Angular version exact; don't bump it without updating IMPLEMENTATION-PLAN.md.
 
 ## Stack
 - Slidev, Vue 3, UnoCSS, Shiki

@@ -35,6 +35,7 @@ describe('WebMCP layer', () => {
       consequentialHint: true,
       readOnlyHint: false,
       untrustedContentHint: false,
+      debugging: false, // added by Angular 22.3 on every form tool
     });
   });
 

@@ -10,7 +10,7 @@ import { ExpenseStore } from '../expenses/expense.store';
 import { AgentActivity } from './agent-activity';
 import { DescriptionMode, TOOL_TEXT } from './tool-descriptions';
 
-type JsonSchema = Parameters<typeof provideExperimentalWebMcpTools>[0][number]['inputSchema'];
+type JsonSchema = NonNullable<Parameters<typeof provideExperimentalWebMcpTools>[0][number]['inputSchema']>;
 type AnyTool = WebMcpToolDescriptor<JsonSchema>;
 
 /** Keeps each tool's argument types inferred from its own `inputSchema`. */

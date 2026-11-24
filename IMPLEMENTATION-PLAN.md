@@ -26,7 +26,12 @@ Last updated: 2026-09-30 (demo built, forms spike done, deck drafted against the
       the validator messages, annotations surface as `readOnly` / `consequential`
 - [ ] Eyeball the DevTools Application → WebMCP panel itself with both flags on (not done headless)
 
-## Verified API facts (Angular 22.2.0, from node_modules)
+## Verified API facts (Angular 22.2.0, from node_modules; re-checked on 22.3.0 on 2026-11-24)
+
+**22.3.0 changes:** API names unchanged, still `@experimental`. Angular now ships official WebMCP types
+(`third_party/webmcp-types`): `inputSchema` is optional on the tool descriptor and `document.modelContext`
+is typed, so `expense.tools.ts` uses `NonNullable<…['inputSchema']>` and the test fake casts
+`document`. Form tools get one more forced annotation: `debugging: false`.
 
 - `provideExperimentalWebMcpTools(tools)` / `declareExperimentalWebMcpTool(tool, injector?)` in
   `@angular/core`, `@experimental`. `execute(args, client)` is wrapped in
@@ -53,13 +58,16 @@ at registration, from the model's **runtime value** (`typeof`), in `inferSchemaF
 - `null` field or empty array at init → **no tool at all**; the error is an unhandled promise rejection,
   `form()` does not throw.
 - Nested arrays of objects work if the array is non-empty at init.
-- Annotations forced to `readOnlyHint: false, untrustedContentHint: false`; `consequentialHint` is yours.
+- Annotations forced to `readOnlyHint: false, untrustedContentHint: false` (+ `debugging: false` since 22.3); `consequentialHint` is yours.
 - `execute` = `node.value.set(args)` → `submit(form)`. Args are **not** validated against the schema:
   missing fields, `"12"` for a number, extra properties all reach the model and the submit handler.
 - Validator errors come back as `Form submission failed:\n<field>: <message or kind>`.
 - Async: default `ignoreValidators: 'pending'` → a **pending** async validator does not block an agent
   submit. `'none'` blocks it but the agent gets an empty failure list. A resolved async error blocks and
-  is reported.
+  is reported **only if the agent resends the value already checked**: `execute()` sets the agent's args
+  and submits in the same turn, so a new value restarts the async check and it is still pending at submit
+  (pinned 2026-11-24: default → submitted; `'none'` → `Form submission failed:\n`). In practice only
+  **sync** validator errors reach the agent.
 
 Adaptations in the demo (documented on the slides "Shape the model for the schema" and
 "The validators are the contract"): flat primitive model, ISO date **string**, amount a number in EUR
@@ -111,3 +119,8 @@ Generated schema for the demo's `addExpense` tool:
 - 2026-09-30 — expense dashboard + WebMCP layer built; forms-schema spike (pinned as tests);
   deck restructured to the final abstract (run of show, payoff, description-as-prompt, HITL, status).
 - 2026-09-28 — project scaffolded from the talk-a2ui layout; `slides.md` skeleton from the abstract.
+- 2026-11-24 — demo moved to Angular 22.3.0. Type-only fixes for the new official WebMCP types
+  (`expense.tools.ts`, `testing/fake-model-context.ts`); `debugging: false` added to the two annotation
+  assertions; two new spike tests pin that a new agent value makes async validators pending at submit
+  (only sync errors reach the agent). 28/28 green, build green. Slide text not changed: the Q&A slide
+  ("A resolved error blocks the submit and is reported") and the 22.2 annotation slide need Giorgio's update.
