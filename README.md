@@ -36,7 +36,7 @@ Demo app, browser flags and on-stage setup: see [`demo/README.md`](demo/README.m
 
 ```
 slides.md               — slide content and speaker notes
-demo/                   — Angular 22.2.0 demo app (cd demo && npm start)
+demo/                   — Angular 22.3.0 demo app (cd demo && npm start)
 IMPLEMENTATION-PLAN.md  — living build doc: demo app, demo tiers, risks, changelog
 src/                    — images used in slides
 styles/                 — custom CSS

@@ -11,7 +11,7 @@ import {
 import { FakeModelContext, installFakeModelContext } from '../../testing/fake-model-context';
 
 /**
- * SPIKE (Angular 22.2.0): what does `provideExperimentalWebMcpForms()` actually hand the agent?
+ * SPIKE (Angular 22.2.0, re-run on 22.3.0 on 2026-11-24): what does `provideExperimentalWebMcpForms()` actually hand the agent?
  *
  * Each `it` pins one finding, so an Angular update that changes the behaviour fails loudly here
  * (the API is Experimental and may change outside majors). Findings are summarised in
@@ -80,6 +80,7 @@ describe('SPIKE: provideExperimentalWebMcpForms() schema + execute', () => {
     expect(mc.tools.get('flat')!.annotations).toEqual({
       readOnlyHint: false,
       untrustedContentHint: false,
+      debugging: false, // added by Angular 22.3
     });
   });
 
@@ -194,7 +195,7 @@ describe('SPIKE: provideExperimentalWebMcpForms() schema + execute', () => {
     expect(submitted).toBe(false);
   });
 
-  it('a resolved async validator error blocks the submission and is reported', async () => {
+  it('a resolved async validator error blocks the submission and is reported (only when the agent resends the value already checked)', async () => {
     let submitted = false;
     makeForm(
       'asyncResolved',
@@ -215,6 +216,46 @@ describe('SPIKE: provideExperimentalWebMcpForms() schema + execute', () => {
     expect(await mc.call('asyncResolved', { code: 'X' })).toBe(
       'Form submission failed:\ncode: Code already used',
     );
+    expect(submitted).toBe(false);
+  });
+
+  it('a NEW value from the agent restarts the async check, so a failing async validator does NOT block by default', async () => {
+    let submitted = false;
+    makeForm(
+      'probeDefault',
+      { code: 'X' },
+      (p) =>
+        validateAsync(p.code, {
+          params: ({ value }) => value(),
+          factory: (params) => resource({ params, loader: async () => 'duplicate' }),
+          onSuccess: (r) => (r === 'duplicate' ? { kind: 'taken', message: 'Code already used' } : undefined),
+          onError: () => undefined,
+        }),
+      { action: () => (submitted = true) },
+    );
+    await flush();
+    // The loader resolves at once with 'duplicate', but the agent's value is new: execute() sets it and
+    // submits in the same turn, while the check for 'Z' is still pending.
+    expect(await mc.call('probeDefault', { code: 'Z' })).toBe('Form submitted successfully.');
+    expect(submitted).toBe(true);
+  });
+
+  it('...and with ignoreValidators "none" it blocks, but the agent gets no message for the async error', async () => {
+    let submitted = false;
+    makeForm(
+      'probeNone',
+      { code: 'X' },
+      (p) =>
+        validateAsync(p.code, {
+          params: ({ value }) => value(),
+          factory: (params) => resource({ params, loader: async () => 'duplicate' }),
+          onSuccess: (r) => (r === 'duplicate' ? { kind: 'taken', message: 'Code already used' } : undefined),
+          onError: () => undefined,
+        }),
+      { action: () => (submitted = true), ignoreValidators: 'none' },
+    );
+    await flush();
+    expect(await mc.call('probeNone', { code: 'Z' })).toBe('Form submission failed:\n');
     expect(submitted).toBe(false);
   });
 });
